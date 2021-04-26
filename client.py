@@ -1,4 +1,4 @@
-import discord
+import discord                 #import libraries
 from discord.ext import commands
 from discord.ext.commands import bot
 import asyncio
@@ -11,27 +11,28 @@ from PIL import Image
 import time
 import os
 import sys
-response = requests.post(
+response = requests.post(                  #inizialize removebg api
     'https://api.remove.bg/v1.0/removebg',
     files={'image_file': open('bg.png', 'rb')},
     data={'size': 'auto'},
     headers={'X-Api-Key': 'API'},
 )
-image_types = ["png", "jpeg", "gif", "jpg"]
+image_types = ["png", "jpeg", "gif", "jpg"]       #setting up parameters for wide
 wpercent= 40
 basewidth = 180
 hsize = 50
-client = commands.Bot(command_prefix='.')
+
+client = commands.Bot(command_prefix='.')    #define bot prefix
 
 
-@client.event
+@client.event                 #message connect!
 async def on_ready():
     print("Bot is ready")
 
 
-@client.command()
+@client.command()                                       # wide command and processing 
 async def wide(ctx):
-    # USAGE: use command .save in the comment box when uploading an image to save the image as a jpg
+
     try:
         url = ctx.message.attachments[0].url            # check for an image, call exception if none found
     except IndexError:
@@ -40,34 +41,34 @@ async def wide(ctx):
     else:
         if url[0:26] == "https://cdn.discordapp.com":   # look to see if url is from discord
             r = requests.get(url, stream=True)
-            imageName = 'fullsized_image' + '.png'     
+            imageName = 'fullsized_image' + '.png'      # save image to wide
             with open(imageName, 'wb') as out_file:
                 print('Saving image: ' + imageName)
-                shutil.copyfileobj(r.raw, out_file)     # save image (goes to project directory)
-                img = Image.open('fullsized_image.png')
+                shutil.copyfileobj(r.raw, out_file)     # save image from discord server
+                img = Image.open('fullsized_image.png') 
                 img = img.resize((460, 200), Image.ANTIALIAS)
-                img.save('resized_image.png') # save image (goes to project directory)
+                img.save('resized_image.png') # save image wide
                 await ctx.send('Wide!', file=discord.File('resized_image.png'))
 
 
 @client.command()
-async def remove(ctx):
+async def remove(ctx):                                  # define removebg command
     try:
         url = ctx.message.attachments[0].url            # check for an image, call exception if none found
     except IndexError:
-        print("Error: No attachments")
+        print("Error: No attachments")                  # check attachments presence
         await ctx.send("No attachments detected!")
     else:
         if url[0:26] == "https://cdn.discordapp.com":   # look to see if url is from discord
             r = requests.get(url, stream=True)
-            imageName = 'bg' + '.png'     
+            imageName = 'bg' + '.png'                   # save bg image
             with open(imageName, 'wb') as out_file:
                 print('Saving image: ' + imageName)
-                shutil.copyfileobj(r.raw, out_file) # save image (goes to project directory)
+                shutil.copyfileobj(r.raw, out_file) # save image 
                 
                    
 
-        response = requests.post(
+        response = requests.post(                       # recall api for removebg
     'https://api.remove.bg/v1.0/removebg',
     files={'image_file': open('bg.png', 'rb')},
     data={'size': 'auto'},
@@ -78,7 +79,7 @@ async def remove(ctx):
     with open('no-bg.png', 'wb') as out:
         out.write(response.content)
 
-    await ctx.send('No Backgroud!', file=discord.File('no-bg.png'))
+    await ctx.send('No Backgroud!', file=discord.File('no-bg.png'))     #send image without background in discord server
 
 
-client.run('API')
+client.run('TOKEN')
