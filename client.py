@@ -24,7 +24,11 @@ hsize = 50
 
 client = commands.Bot(command_prefix='.')    #define bot prefix
 
-
+@client.command()
+async def ping(ctx):
+    await ctx.send('Pong! {0}'.format(round(bot.latency, 1)))
+    
+    
 @client.event                 #message connect!
 async def on_ready():
     print("Bot is ready")
